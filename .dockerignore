@@ -1,0 +1,42 @@
+# 版本控制与 IDE
+.git
+.gitignore
+.github
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Python 虚拟环境与字节码
+.venv
+venv
+env
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# 密钥：绝不进镜像（镜像每一层都是只读的，写进去即使删除文件也仍留在历史里）
+.env
+
+# 运行时状态：由数据卷提供，不进镜像
+app.sqlite
+app.sqlite-wal
+app.sqlite-shm
+chroma_db
+md5.text
+logs
+*.log
+
+# 测试与工具缓存
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+
+# 评测产物（评测脚本与数据集保留，只排除结果输出）
+evaluation/results
+
+# 前端依赖（本项目前端由 FastAPI 直接提供，无构建步骤）
+node_modules

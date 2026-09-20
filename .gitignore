@@ -1,0 +1,31 @@
+# 密钥与环境变量
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 虚拟环境
+.venv/
+venv/
+
+# IDE / 本地工具配置
+.idea/
+.vscode/
+.claude/
+
+# 运行时产物
+logs/
+evaluation/results/
+# 向量库是由 data/ 下的文档构建出来的产物，clone 后用 python -m rag.vector_store 重建
+chroma_db/
+md5.text
+# 应用数据库：会话历史、用户档案。带 * 是为了一并忽略 SQLite 的 -wal / -shm 文件
+# （它们同样包含真实对话内容）
+app.sqlite*
+
+# 系统
+.DS_Store
+Thumbs.db

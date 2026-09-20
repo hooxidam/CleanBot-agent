@@ -1,0 +1,5 @@
+# 容器里的 shell 脚本必须是 LF。
+# Windows 上若 core.autocrlf=true，克隆下来会被转成 CRLF，
+# 导致 Linux 容器启动时报 "exec format error: /app/docker/entrypoint.sh"。
+* text=auto
+*.sh text eol=lf

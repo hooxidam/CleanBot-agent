@@ -1,0 +1,12 @@
+chat_model_name: deepseek-v4.1-flash
+
+embedding_provider: local
+embedding_model_name: BAAI/bge-small-zh-v1.5
+embedding_device: cpu
+embedding_normalize: true
+
+reranker_enabled: true
+reranker_model_name: BAAI/bge-reranker-base
+reranker_device: cpu
+reranker_candidate_k: 5
+reranker_batch_size: 8

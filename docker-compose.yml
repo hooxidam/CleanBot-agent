@@ -1,0 +1,44 @@
+# 显式指定项目名：否则 Compose 会从目录名推导（中文目录被推导成通用的 "agent"，
+# 容易与其他项目撞名，也会让数据卷名变得不可预期）
+name: robocare-agent
+
+services:
+  backend:
+    build: .
+    image: robocare-agent:latest
+    container_name: robot-agent-backend
+
+    ports:
+      # 宿主机 8000 -> 容器 8000
+      - "8000:8000"
+
+    env_file:
+      # 需先执行 cp .env.example .env 并填入 DASHSCOPE_API_KEY
+      - .env
+
+    volumes:
+      # 运行时状态：app.sqlite（会话/checkpoint）、chroma_db（向量库）、md5.text
+      # 命名卷，容器删除重建后数据仍在
+      - agent-state:/state
+      # 嵌入模型与重排序模型的缓存，避免每次重建容器都重新下载
+      - model-cache:/home/app/.cache
+
+    healthcheck:
+      # 用 python 自带的 urllib 发请求，无需在镜像里额外装 curl。
+      # /health 不调用大模型，只确认服务活着。
+      # urlopen 遇到非 2xx 会抛异常，python 进程以非 0 退出，即判定为 unhealthy。
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      # 首次启动要下载嵌入模型（HuggingFaceEmbeddings 在 import 时初始化），
+      # 这段时间内允许一直处于 starting 状态，不算失败。
+      start_period: 180s
+
+volumes:
+  agent-state:
+  model-cache:

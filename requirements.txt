@@ -1,0 +1,30 @@
+# ===== 核心框架 =====
+langchain==1.3.13
+langchain-core==1.4.9
+langchain-community==0.4.2
+langgraph==1.2.9
+langgraph-checkpoint==4.1.1
+# 会话历史落盘(多轮对话记忆的 checkpointer)
+langgraph-checkpoint-sqlite==3.1.0
+
+# ===== RAG / 向量库 =====
+langchain-chroma==1.1.0
+langchain-text-splitters==1.1.2
+chromadb==1.5.9
+sentence-transformers>=2.5.1
+
+# ===== 模型服务(阿里云百炼 DashScope / 通义千问) =====
+dashscope==1.26.3
+# 聊天模型走 DashScope 的 OpenAI 兼容接口(解决 ChatTongyi 流式+工具调用的 JSON bug)
+langchain-openai==1.3.5
+
+# ===== 文档加载 =====
+pypdf==6.14.2
+
+# ===== 配置与工具 =====
+PyYAML==6.0.3
+python-dotenv==1.2.2
+
+# ===== Web 服务(FastAPI + SSE 流式接口) =====
+fastapi==0.139.0
+uvicorn==0.51.0

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RoboCare 扫地机器人智能售后助手">
+    <title>RoboCare · 扫地机器人智能售后</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='7' fill='%231e3d8f'/%3E%3Cpath d='M7 9h10a2 2 0 0 1 2 2v6H5v-6a2 2 0 0 1 2-2Zm3 0V6h4v3M9 13h.01M15 13h.01' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260919">
+</head>
+<body>
+    <section id="identityScreen" class="identity-screen" aria-labelledby="identityTitle">
+        <div class="identity-shell">
+            <div class="identity-brand">
+                <span class="brand-mark" data-icon="bot"></span>
+                <h1>RoboCare</h1>
+                <p>扫地机器人智能售后</p>
+            </div>
+            <div class="identity-card">
+                <div class="identity-card-head">
+                    <h2 id="identityTitle">选择演示身份</h2>
+                    <p>当前项目使用模拟用户与设备数据，不包含账号密码认证。选择身份后可查看该用户的独立会话，并让 Agent 按需查询其设备信息。</p>
+                </div>
+                <div id="identityGrid" class="identity-grid">
+                    <div class="load-state"><span class="spinner"></span>正在加载用户</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="app" class="app-shell hidden">
+        <header class="topbar">
+            <div class="topbar-brand">
+                <span class="brand-mark" data-icon="bot"></span>
+                <span class="brand-copy"><strong>RoboCare</strong><small>扫地机器人智能售后</small></span>
+            </div>
+            <div class="topbar-center">智能客服</div>
+            <div class="topbar-actions">
+                <div id="serviceStatus" class="service-status"><span class="status-dot"></span><span>正在连接</span></div>
+                <button class="icon-btn mobile-only" type="button" onclick="toggleConversationDrawer()" aria-label="打开会话列表" title="会话列表" data-icon="messages"></button>
+                <button class="icon-btn mobile-only" type="button" onclick="toggleDeviceDrawer()" aria-label="打开设备面板" title="设备面板" data-icon="device"></button>
+            </div>
+        </header>
+
+        <div id="workspace" class="workspace">
+            <aside id="conversationRail" class="conversation-rail" aria-label="会话中心">
+                <div class="rail-head">
+                    <h2>会话</h2>
+                    <button id="newChatBtn" class="icon-btn" type="button" aria-label="新建对话" title="新建对话" data-icon="edit"></button>
+                </div>
+                <label class="search-box"><span data-icon="search"></span><input id="sessionSearch" type="search" placeholder="搜索会话" aria-label="搜索会话"></label>
+                <div id="sessionList" class="session-list" aria-live="polite"></div>
+                <div class="rail-footer">
+                    <div class="current-user">
+                        <span id="currentAvatar" class="user-avatar">-</span>
+                        <span class="user-copy"><strong id="currentUserId">未选择用户</strong><small>演示用户</small></span>
+                        <button id="switchUserBtn" class="icon-btn" type="button" aria-label="退出当前身份" title="退出当前身份" data-icon="logout"></button>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="chat-panel">
+                <header class="chat-head">
+                    <div class="chat-title"><h1>智能售后助手</h1><p>结合设备状态、故障记录和维修知识提供排障建议</p></div>
+                    <button class="icon-btn desktop-device-toggle" type="button" onclick="toggleDevicePanel()" aria-label="折叠设备面板" title="折叠设备面板" data-icon="panel"></button>
+                </header>
+                <section id="messages" class="messages" aria-live="polite"><div id="messageList" class="message-list"></div></section>
+                <footer class="composer-wrap">
+                    <div class="composer">
+                        <textarea id="input" rows="1" placeholder="描述设备故障，或询问使用与维护问题" aria-label="输入问题"></textarea>
+                        <button id="sendBtn" class="btn btn-primary send-button" type="button" aria-label="发送问题" title="发送" data-icon="send"></button>
+                    </div>
+                    <div class="composer-note">Enter 发送，Shift + Enter 换行</div>
+                </footer>
+            </main>
+
+            <aside id="devicePanel" class="device-panel" aria-label="设备支持面板">
+                <div class="device-panel-head">
+                    <div><h2>我的设备</h2><p>诊断信息由 Agent 按需查询</p></div>
+                    <button class="icon-btn" type="button" onclick="toggleDevicePanel()" aria-label="折叠设备面板" title="折叠" data-icon="close"></button>
+                </div>
+                <div id="deviceContent" class="device-scroll"></div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="mobileBackdrop" class="mobile-backdrop hidden" onclick="closeMobilePanels()"></div>
+    <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+    <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal-card">
+            <h2 id="confirmTitle">确认操作</h2>
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button id="confirmCancel" class="btn btn-secondary" type="button">取消</button>
+                <button id="confirmOk" class="btn btn-danger" type="button">确认</button>
+            </div>
+        </div>
+    </div>
+    <script src="/assets/app.js?v=20260915"></script>
+</body>
+</html>

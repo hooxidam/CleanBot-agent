@@ -1,0 +1,18 @@
+# 用户档案与月度使用汇总（模拟厂家侧的用户资料 + 遥测汇总）
+external_data_path: data/external/records.csv
+# 模拟业务统一使用这一时间基准，保证设备状态、故障历史和保修计算处于同一时间线。
+# 对接真实服务时删除或留空，系统会自动回退到真实当前时间。
+simulation_now: "2026-07-17 12:00:00"
+# 设备档案：型号、购买日期、保修
+devices_path: data/external/devices.csv
+# 设备实时状态：在线/电量/当前错误
+device_status_path: data/external/device_status.csv
+# 设备故障日志
+error_logs_path: data/external/error_logs.csv
+
+# 单条用户消息最多允许真正执行的业务工具次数。
+max_tool_calls: 8
+#LangGraph 图执行层的最终保险。一次工具调用会跨越多个图节点，因此要高于 8。
+recursion_limit: 24
+# 完全相同的工具和参数最多允许连续执行 3 次，第 4 次会被拦截。
+max_consecutive_duplicate_tool_calls: 3
