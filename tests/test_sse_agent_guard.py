@@ -14,13 +14,33 @@ def _events(response_text: str) -> list[dict]:
     ]
 
 
+class _SessionStore:
+    def get_session(self, session_id):
+        return {"session_id": session_id, "user_id": "1004"}
+
+    def touch(self, *args, **kwargs):
+        pass
+
+
+def test_session_cannot_be_accessed_by_another_user(monkeypatch):
+    monkeypatch.setattr(server, "session_store", _SessionStore())
+
+    response = TestClient(server.app).get(
+        "/sessions/private-session/messages",
+        params={"user_id": "1005"},
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "会话不存在"
+
+
 def test_sse_normal_stream_still_sends_done(monkeypatch):
     class FakeAgent:
         def stream_events(self, query, session_id, user_id, request_id=None):
             yield {"type": "token", "content": "你好"}
 
     monkeypatch.setattr(server, "agent", FakeAgent())
-    monkeypatch.setattr(server.session_store, "touch", lambda *args, **kwargs: None)
+    monkeypatch.setattr(server, "session_store", _SessionStore())
 
     response = TestClient(server.app).get(
         "/chat/stream",
@@ -46,6 +66,7 @@ def test_sse_guard_error_is_friendly_and_stream_ends(monkeypatch):
             yield  # pragma: no cover
 
     monkeypatch.setattr(server, "agent", LimitedAgent())
+    monkeypatch.setattr(server, "session_store", _SessionStore())
 
     response = TestClient(server.app).get(
         "/chat/stream",

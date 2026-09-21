@@ -58,6 +58,13 @@ class CreateSessionBody(BaseModel):
     user_id: str
 
 
+def _require_owned_session(session_id: str, user_id: str) -> dict:
+    session = session_store.get_session(session_id)
+    if not session or session["user_id"] != user_id:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    return session
+
+
 def _sse_pack(data: dict) -> str:
     """把一个字典打包成一条 SSE 消息。
     SSE 规定每条消息形如：  data: <内容>\\n\\n
@@ -100,20 +107,18 @@ def create_session(body: CreateSessionBody):
 
 
 @app.delete("/sessions/{session_id}")
-def delete_session(session_id: str):
+def delete_session(session_id: str, user_id: str):
     """删除会话：既要删会话元数据，也要删对应的消息历史，避免留下孤儿数据"""
-    if not session_store.get_session(session_id):
-        raise HTTPException(status_code=404, detail="会话不存在")
+    _require_owned_session(session_id, user_id)
     session_store.delete(session_id)
     agent.delete_history(session_id)
     return {"deleted": session_id}
 
 
 @app.get("/sessions/{session_id}/messages")
-def get_session_messages(session_id: str):
+def get_session_messages(session_id: str, user_id: str):
     """会话的历史消息，前端切换会话时用它回显之前聊过的内容"""
-    if not session_store.get_session(session_id):
-        raise HTTPException(status_code=404, detail="会话不存在")
+    _require_owned_session(session_id, user_id)
     return {"messages": agent.get_history(session_id)}
 
 
@@ -127,6 +132,8 @@ def chat_stream(query: str, session_id: str, user_id: str):
     :param user_id: 当前用户，注入 Agent 运行时上下文，供各查询工具确定"查谁的数据"。
                     工具签名里不暴露 user_id，模型无权指定，因此无法越权读取他人数据
     """
+
+    _require_owned_session(session_id, user_id)
 
     def event_generator():
         request_id = uuid4().hex[:12]

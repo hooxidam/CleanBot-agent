@@ -324,7 +324,7 @@ async function selectSession(sessionId) {
     const list = $('messageList');
     list.innerHTML = '<div class="load-state"><span class="spinner"></span>正在加载对话</div>';
     try {
-        const data = await fetchJson(`/sessions/${encodeURIComponent(sessionId)}/messages`, {}, '无法加载对话记录');
+        const data = await fetchJson(`/sessions/${encodeURIComponent(sessionId)}/messages?user_id=${encodeURIComponent(state.currentUser.user_id)}`, {}, '无法加载对话记录');
         list.innerHTML = '';
         if (!(data.messages || []).length) renderEmptyState();
         else data.messages.forEach(message => addMessage(message.role, message.content, message.role === 'bot'));
@@ -377,7 +377,7 @@ async function deleteSession(sessionId) {
     }
     if (!await askConfirm('删除这场对话？', '删除后聊天记录无法恢复。')) return;
     try {
-        await fetchJson(`/sessions/${encodeURIComponent(sessionId)}`, { method: 'DELETE' }, '删除会话失败');
+        await fetchJson(`/sessions/${encodeURIComponent(sessionId)}?user_id=${encodeURIComponent(state.currentUser.user_id)}`, { method: 'DELETE' }, '删除会话失败');
         if (state.currentSessionId === sessionId) state.currentSessionId = null;
         await loadSessions(true);
         showToast('会话已删除');
